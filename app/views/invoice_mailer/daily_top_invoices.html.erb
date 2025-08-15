@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      .header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      
+      .header h1 {
+        color: #2c3e50;
+        margin: 0;
+        font-size: 28px;
+      }
+      
+      .summary {
+        background-color: #e8f5e8;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        border-left: 4px solid #28a745;
+      }
+      
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .invoice-table th {
+        background-color: #6c757d;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: bold;
+      }
+      
+      .invoice-table td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+      }
+      
+      .invoice-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      
+      .invoice-table tr:hover {
+        background-color: #e9ecef;
+      }
+      
+      .amount {
+        font-weight: bold;
+        color: #28a745;
+        text-align: right;
+      }
+      
+      .rank {
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #dee2e6;
+        color: #6c757d;
+        font-size: 14px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Top 10 facturas del día</h1>
+      <p><%= Date.current.strftime('%A, %B %d, %Y') %></p>
+    </div>
+    
+    <div class="summary">
+      <h3>Resumen</h3>
+      <p><strong>Total de facturas:</strong> <%= @invoices.count %></p>
+      <p><strong>Valor total:</strong> $<%= number_with_delimiter(@total_amount, delimiter: ',') %></p>
+    </div>
+    
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Posición</th>
+          <th>Número de Factura</th>
+          <th>Fecha</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invoices.each_with_index do |invoice, index| %>
+          <tr>
+            <td>
+              <span class="rank"><%= index + 1 %></span>
+            </td>
+            <td><%= invoice.invoice_number || "N/A" %></td>
+            <td><%= invoice.invoice_date&.strftime('%m/%d/%Y') || "N/A" %></td>
+            <td class="amount">$<%= number_with_delimiter(invoice.total, delimiter: ',') %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <div class="footer">
+      <p><span class="emoji">🤖</span><strong>Reporte Automatizado de Invoicely</strong></p>
+      <p>Este reporte se genera automáticamente cada mañana a las 8:00 AM</p>
+      <p>Generado el <%= Time.current.strftime('%d/%m/%Y a las %I:%M %p %Z') %></p>
+      <p><em>Los datos mostrados incluyen solo facturas activas</em></p>
+    </div>
+  </body>
+</html>

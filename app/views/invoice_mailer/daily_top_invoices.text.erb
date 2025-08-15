@@ -1,0 +1,20 @@
+Top 10 facturas del día
+<%= Date.current.strftime('%d/%m/%Y') %>
+
+Resumen:
+========
+Total de facturas: <%= @invoices.count %>
+Valor total: $<%= number_with_delimiter(@total_amount, delimiter: ',') %>
+
+<% @invoices.each_with_index do |invoice, index| %>
+<%= "#{index + 1}.".ljust(3) %> Número de factura: <%= invoice.invoice_number || "N/A" %>
+     Fecha: <%= invoice.invoice_date&.strftime('%m/%d/%Y') || "N/A" %>
+     Valor: $<%= number_with_delimiter(invoice.total, delimiter: ',') %>
+
+<% end %>
+
+Este reporte se genera automáticamente cada mañana a las 8:00 AM
+Generado el <%= Time.current.strftime('%d/%m/%Y a las %H:%M') %>
+
+Los datos mostrados incluyen solo facturas activas
+

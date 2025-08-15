@@ -9,4 +9,5 @@
 #  active         :boolean
 #
 class Invoice < ApplicationRecord
+  scope :active, -> { where(active: true) }
 end
