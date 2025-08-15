@@ -13,8 +13,8 @@ interface Invoice {
 type SortField = 'invoice_number' | 'invoice_date' | 'total' | 'status';
 
 export const Invoices = () => {
-  const [startRange] = useQueryState("startRange");
-  const [endRange] = useQueryState("endRange");
+  const [startRange, setStartRange] = useQueryState("startRange");
+  const [endRange, setEndRange] = useQueryState("endRange");
   const [page] = useQueryState("page");
   const [perPage] = useQueryState("perPage");
   const [sort, setSort] = useQueryState("sort");
@@ -55,6 +55,21 @@ export const Invoices = () => {
       setSort(field);
       setDirection('desc');
     }
+  };
+
+  const handleDateRangeChange = (start: string, end: string) => {
+    setStartRange(start || null);
+    setEndRange(end || null);
+  };
+
+  const clearFilters = () => {
+    setStartRange(null);
+    setEndRange(null);
+  };
+
+  const formatDateForInput = (dateString: string | null) => {
+    if (!dateString) return '';
+    return new Date(dateString).toISOString().split('T')[0];
   };
 
   const formatDate = (dateString: string) => {
@@ -134,10 +149,72 @@ export const Invoices = () => {
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
+    <div className="space-y-6">
+      {/* Date Range Filter */}
+      <div className="bg-white shadow-sm rounded-lg">
+        <div className="px-6 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col">
+                <label htmlFor="start-date" className="text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="start-date"
+                  value={formatDateForInput(startRange)}
+                  onChange={(e) => handleDateRangeChange(e.target.value, endRange || '')}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="end-date" className="text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  id="end-date"
+                  value={formatDateForInput(endRange)}
+                  onChange={(e) => handleDateRangeChange(startRange || '', e.target.value)}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {(startRange || endRange) && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Clear
+                </button>
+              )}
+              <div className="text-sm text-gray-500 flex items-center">
+                {startRange && endRange && (
+                  <span>
+                    {formatDate(startRange)} - {formatDate(endRange)}
+                  </span>
+                )}
+                {startRange && !endRange && (
+                  <span>From {formatDate(startRange)}</span>
+                )}
+                {!startRange && endRange && (
+                  <span>Until {formatDate(endRange)}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Invoice Table */}
+      <div className="bg-white shadow-sm rounded-lg">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h1 className="text-2xl font-semibold text-gray-900">Invoices</h1>
+        </div>
       
       {invoices.length === 0 ? (
         <div className="text-center py-12">
@@ -223,6 +300,7 @@ export const Invoices = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

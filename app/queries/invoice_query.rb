@@ -16,10 +16,10 @@ class InvoiceQuery
 
   def sanitize_params(params)
     {
-      start_range: params[:start_range] && Date.parse(params[:start_range]),
-      end_range: params[:end_range] && Date.parse(params[:end_range]),
+      start_range: params[:startRange] && Date.parse(params[:startRange]),
+      end_range: params[:endRange] && Date.parse(params[:endRange]),
       page: params[:page] && params[:page].to_i || 1,
-      per_page: params[:per_page] && params[:per_page].to_i || 10,
+      per_page: params[:perPage] && params[:perPage].to_i || 10,
       sort: params[:sort] || "invoice_date",
       direction: params[:direction] || "desc"
     }
