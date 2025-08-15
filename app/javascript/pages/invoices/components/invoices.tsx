@@ -30,10 +30,10 @@ const formatCurrency = (amount: string) => {
 };
 
 export const Invoices = () => {
-  const [startRange] = useQueryState("startRange");
-  const [endRange] = useQueryState("endRange");
+  const [startRange] = useQueryState("start_range");
+  const [endRange] = useQueryState("end_range");
   const [page] = useQueryState("page");
-  const [perPage] = useQueryState("perPage");
+  const [perPage] = useQueryState("per_page");
   const [sort, setSort] = useQueryState("sort");
   const [direction, setDirection] = useQueryState("direction");
 
@@ -45,16 +45,26 @@ export const Invoices = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-        if (startRange) params.append("startRange", startRange);
-        if (endRange) params.append("endRange", endRange);
+        if (startRange) params.append("start_range", startRange);
+        if (endRange) params.append("end_range", endRange);
         if (page) params.append("page", page);
-        if (perPage) params.append("perPage", perPage);
+        if (perPage) params.append("per_page", perPage);
         if (sort) params.append("sort", sort);
         if (direction) params.append("direction", direction);
         
-        const response = await fetch(`/invoices.json?${params.toString()}`);
+        const response = await fetch(`/invoices?${params.toString()}`, {
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (!response.ok) {
+          return
+        }
+
         const data = await response.json();
-        setInvoices(data.invoices);
+        setInvoices(data.invoices || []);
       } catch (error) {
         console.error('Failed to fetch invoices:', error);
       } finally {

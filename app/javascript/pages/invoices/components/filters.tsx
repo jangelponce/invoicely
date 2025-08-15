@@ -6,8 +6,8 @@ const formatDateForInput = (dateString: string | null) => {
 };
 
 export const Filters = () => {
-  const [startRange, setStartRange] = useQueryState("startRange");
-  const [endRange, setEndRange] = useQueryState("endRange");
+  const [startRange, setStartRange] = useQueryState("start_range");
+  const [endRange, setEndRange] = useQueryState("end_range");
 
   const handleDateRangeChange = (start: string, end: string) => {
     setStartRange(start || null);

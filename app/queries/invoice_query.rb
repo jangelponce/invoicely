@@ -1,4 +1,9 @@
 class InvoiceQuery
+  DEFAULT_PAGE = 1
+  DEFAULT_PER_PAGE = 10
+  DEFAULT_SORT_FIELD = "invoice_date"
+  DEFAULT_SORT_DIRECTION = "desc"
+
   def initialize(scope = Invoice.all, params = {})
     @scope = scope
     @params = sanitize_params(params)
@@ -16,26 +21,26 @@ class InvoiceQuery
 
   def sanitize_params(params)
     {
-      start_range: params[:startRange] && Date.parse(params[:startRange]),
-      end_range: params[:endRange] && Date.parse(params[:endRange]),
-      page: params[:page] && params[:page].to_i || 1,
-      per_page: params[:perPage] && params[:perPage].to_i || 10,
-      sort: params[:sort] || "invoice_date",
-      direction: params[:direction] || "desc"
+      start_range: params[:start_range] && Date.parse(params[:start_range]),
+      end_range: params[:end_range] && Date.parse(params[:end_range]),
+      page: params[:page] || DEFAULT_PAGE,
+      per_page: params[:per_page] || DEFAULT_PER_PAGE,
+      sort: params[:sort] || DEFAULT_SORT_FIELD,
+      direction: params[:direction] || DEFAULT_SORT_DIRECTION
     }
   end
 
-  def filter_by_range(scope, start_range: nil, end_range: nil)
+  def filter_by_range(scope, start_range:, end_range:)
     return scope if start_range.blank? && end_range.blank?
 
     scope.where(invoice_date: start_range..end_range)
   end
 
-  def paginate(scope, page: 1, per_page: 10)
+  def paginate(scope, page:, per_page:)
     scope.offset((page - 1) * per_page).limit(per_page)
   end
 
-  def order(scope, sort: "invoice_date", direction: "desc")
+  def order(scope, sort:, direction:)
     scope.order(sort => direction)
   end
 end
