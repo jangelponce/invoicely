@@ -23,24 +23,24 @@ RSpec.describe DailyTopSellDatesJob, type: :job do
     it 'groups invoices by date and sums totals correctly' do
       described_class.new.perform
 
-      expect(InvoiceMailer).to have_received(:daily_top_sales_days) do |top_sales_days|
+      expect(InvoiceMailer).to have_received(:daily_top_sales_days) do |reported_date, top_sales_days|
         expect(top_sales_days).to be_an(Array)
         expect(top_sales_days.length).to be <= 10
 
         # El día con más ventas debería ser el de ayer (1500.00)
         top_day = top_sales_days.first
         expect(top_day[:total]).to eq(1500.00)
-        expect(top_day[:date]).to eq(1.day.ago)
+        expect(top_day[:date]).to eq(1.day.ago.to_date)
       end
     end
 
     it 'only includes active invoices' do
       described_class.new.perform
 
-      expect(InvoiceMailer).to have_received(:daily_top_sales_days) do |top_sales_days|
+      expect(InvoiceMailer).to have_received(:daily_top_sales_days) do |reported_date, top_sales_days|
         # No debería incluir la factura inactiva del día 3
         dates = top_sales_days.map { |day| day[:date] }
-        expect(dates).not_to include(3.days.ago)
+        expect(dates).not_to include(3.days.ago.to_date)
       end
     end
 

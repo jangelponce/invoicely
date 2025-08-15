@@ -21,13 +21,22 @@ class InvoiceQuery
 
   def sanitize_params(params)
     {
-      start_range: params[:start_range] && Date.parse(params[:start_range]),
-      end_range: params[:end_range] && Date.parse(params[:end_range]),
+      start_range: params[:start_range] && parse_date_or_datetime(params[:start_range]),
+      end_range: params[:end_range] && parse_date_or_datetime(params[:end_range]),
       page: params[:page] || DEFAULT_PAGE,
       per_page: params[:per_page] || DEFAULT_PER_PAGE,
       sort: params[:sort] || DEFAULT_SORT_FIELD,
       direction: params[:direction] || DEFAULT_SORT_DIRECTION
     }
+  end
+
+  def parse_date_or_datetime(date_string)
+    # If the string contains time information, parse as datetime, otherwise as date
+    if date_string.include?(":")
+      DateTime.parse(date_string)
+    else
+      Date.parse(date_string)
+    end
   end
 
   def filter_by_range(scope, start_range:, end_range:)
