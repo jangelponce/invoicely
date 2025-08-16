@@ -23,10 +23,10 @@ class InvoiceQuery
     {
       start_range: params[:start_range] && parse_date_or_datetime(params[:start_range]),
       end_range: params[:end_range] && parse_date_or_datetime(params[:end_range]),
-      page: params[:page] || DEFAULT_PAGE,
-      per_page: params[:per_page] || DEFAULT_PER_PAGE,
-      sort: params[:sort] || DEFAULT_SORT_FIELD,
-      direction: params[:direction] || DEFAULT_SORT_DIRECTION
+      page: (params[:page].present? ? params[:page].to_i : DEFAULT_PAGE),
+      per_page: (params[:per_page].present? ? params[:per_page].to_i : DEFAULT_PER_PAGE),
+      sort: params[:sort].present? ? params[:sort] : DEFAULT_SORT_FIELD,
+      direction: params[:direction].present? ? params[:direction] : DEFAULT_SORT_DIRECTION
     }
   end
 
