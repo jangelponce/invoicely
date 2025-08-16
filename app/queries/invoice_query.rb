@@ -31,6 +31,8 @@ class InvoiceQuery
   end
 
   def parse_date_or_datetime(date_string)
+    return nil if date_string.blank?
+
     # If the string contains time information, parse as datetime, otherwise as date
     if date_string.include?(":")
       DateTime.parse(date_string)

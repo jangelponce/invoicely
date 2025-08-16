@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe DailyTopInvoicesJob, type: :job do
   describe '#perform' do
     let(:reported_date) { 1.day.ago.beginning_of_day }
-
     let!(:invoice1) { create(:invoice, invoice_date: reported_date + 2.hours, total: 1000.00, active: true) }
     let!(:invoice2) { create(:invoice, invoice_date: reported_date + 4.hours, total: 1500.00, active: true) }
     let!(:invoice3) { create(:invoice, invoice_date: reported_date + 6.hours, total: 800.00, active: true) }
@@ -29,7 +28,6 @@ RSpec.describe DailyTopInvoicesJob, type: :job do
         expect(date).to eq(reported_date)
         expect(invoices).to be_an(Array)
 
-        # Should only include invoices from the reported date
         invoice_dates = invoices.map(&:invoice_date).map(&:to_date).uniq
         expect(invoice_dates).to all(eq(reported_date.to_date))
       end
@@ -42,13 +40,11 @@ RSpec.describe DailyTopInvoicesJob, type: :job do
         totals = invoices.map(&:total)
         expect(totals).to eq(totals.sort.reverse)
 
-        # Highest total should be first
         expect(invoices.first.total).to eq(1500.00)
       end
     end
 
     it 'limits results to 10 invoices' do
-      # Create 15 invoices for the same date
       11.times do |i|
         create(:invoice, invoice_date: reported_date + i.minutes, total: (i + 1) * 100, active: true)
       end
@@ -66,7 +62,6 @@ RSpec.describe DailyTopInvoicesJob, type: :job do
       expect(InvoiceMailer).to have_received(:daily_top_invoices) do |date, invoices|
         expect(invoices.all?(&:active)).to be true
 
-        # Should not include the inactive invoice
         invoice_ids = invoices.map(&:id)
         expect(invoice_ids).not_to include(invoice4.id)
       end
@@ -74,7 +69,6 @@ RSpec.describe DailyTopInvoicesJob, type: :job do
 
     context 'when no active invoices exist for the reported date' do
       before do
-        # Make all invoices from the reported date inactive
         Invoice.where(invoice_date: reported_date..reported_date.end_of_day).update_all(active: false)
       end
 
