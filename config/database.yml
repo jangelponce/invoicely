@@ -19,14 +19,25 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+sqlite: &sqlite
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
 development:
-  <<: *default
-  host: <%= Rails.application.credentials.database_host %>
-  database: <%= Rails.application.credentials.database_name %>
-  username: <%= Rails.application.credentials.database_user %>
-  password: <%= Rails.application.credentials.database_pass %>
-  database_tasks: false
+  primary:
+    <<: *default
+    host: <%= Rails.application.credentials.database_host %>
+    database: <%= Rails.application.credentials.database_name %>
+    username: <%= Rails.application.credentials.database_user %>
+    password: <%= Rails.application.credentials.database_pass %>
+    database_tasks: false
+  cache:
+    <<: *sqlite
+    database: db/invoices_cache.sqlite3
+  queue:
+    <<: *sqlite
+    database: db/invoices_queue.sqlite3
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

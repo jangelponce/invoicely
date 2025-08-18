@@ -1,4 +1,8 @@
 class InvoiceQuery
+  include Cached
+
+  cached_model version_by: -> { [ Invoice.last&.invoice_date&.to_i, Invoice.count ] }
+
   DEFAULT_PAGE = 1
   DEFAULT_PER_PAGE = 10
   DEFAULT_SORT_FIELD = "invoice_date"
