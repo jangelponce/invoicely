@@ -46,3 +46,4 @@ node_modules
 *.local
 
 *.sqlite3
+*.sqlite3-*
