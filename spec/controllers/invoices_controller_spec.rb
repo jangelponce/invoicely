@@ -345,14 +345,14 @@ RSpec.describe InvoicesController, type: :controller do
       expect(response).to have_http_status(:ok)
     end
 
-    it 'calls the call method on InvoiceQuery instance' do
+    it 'calls the cached_call method on InvoiceQuery instance' do
       query_instance = instance_double(InvoiceQuery)
       allow(InvoiceQuery).to receive(:new).and_return(query_instance)
-      allow(query_instance).to receive(:call).and_return([])
+      allow(query_instance).to receive(:cached_call).and_return([])
 
       get :index, format: :json
 
-      expect(query_instance).to have_received(:call)
+      expect(query_instance).to have_received(:cached_call)
     end
   end
 
